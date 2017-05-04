@@ -1056,6 +1056,11 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState &state, const CTransa
     AssertLockHeld(cs_main);
     if (pfMissingInputs)
         *pfMissingInputs = false;
+    
+    if (tx.vin.size() > 100) {
+      LogPrint("mempool", "Dropping tx with more than 100 inputs");
+      return false;
+    }
 
     auto verifier = libzcash::ProofVerifier::Strict();
     if (!CheckTransaction(tx, state, verifier))
